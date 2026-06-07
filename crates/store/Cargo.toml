@@ -1,0 +1,30 @@
+[package]
+name    = "store"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+common      = { path = "../common" }
+compressor  = { path = "../compressor" }
+blob        = { path = "../blob" }
+async-trait = { workspace = true }
+anyhow      = { workspace = true }
+bytes       = { workspace = true }
+tokio       = { workspace = true }
+serde       = { workspace = true }
+serde_json  = { workspace = true }
+
+# store-lance: LanceDB persistent vector store
+lancedb      = { version = "0.26", optional = true }
+arrow-array  = { workspace = true, optional = true }
+arrow-schema = { workspace = true, optional = true }
+futures      = { version = "0.3", optional = true }
+
+[dev-dependencies]
+tempfile = "3"
+blob     = { path = "../blob" }
+
+[features]
+default     = []
+store-lance = ["dep:lancedb", "dep:arrow-array", "dep:arrow-schema", "dep:futures"]
+integration = ["store-lance", "blob/blob-s3"]
