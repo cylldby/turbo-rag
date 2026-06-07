@@ -1,0 +1,21 @@
+[package]
+name    = "compressor"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+common   = { path = "../common" }
+anyhow   = { workspace = true }
+bytes    = { workspace = true }
+serde    = { workspace = true }
+serde_json = { workspace = true }
+tempfile = "3"
+turbovec = "0.2"
+
+# turbovec uses ndarray with BLAS; we must provide a BLAS backend at link time.
+[target.'cfg(target_os = "macos")'.dependencies]
+accelerate-src = "0.3"
+
+[target.'cfg(not(target_os = "macos"))'.dependencies]
+blas-src = { version = "0.10", features = ["openblas"] }
+openblas-src = { version = "0.10", features = ["static"] }
