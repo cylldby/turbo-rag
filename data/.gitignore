@@ -1,0 +1,9 @@
+# Downloaded datasets (too large for git)
+scifact/
+msmarco/
+lance/
+lance-test/
+blob/
+
+# Keep fixtures
+!fixtures/

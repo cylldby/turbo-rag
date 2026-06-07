@@ -1,0 +1,50 @@
+{"id": 1, "text": "Machine learning is a subset of artificial intelligence that enables systems to learn from data.", "metadata": {"category": "ai", "source": "fixture"}}
+{"id": 2, "text": "Deep learning uses neural networks with multiple layers to model complex patterns.", "metadata": {"category": "ml", "source": "fixture"}}
+{"id": 3, "text": "Natural language processing allows computers to understand and generate human language.", "metadata": {"category": "data", "source": "fixture"}}
+{"id": 4, "text": "Computer vision enables machines to interpret and understand visual information.", "metadata": {"category": "nlp", "source": "fixture"}}
+{"id": 5, "text": "Reinforcement learning trains agents to make decisions through trial and error.", "metadata": {"category": "cv", "source": "fixture"}}
+{"id": 6, "text": "Transformer architectures revolutionized NLP with attention mechanisms.", "metadata": {"category": "robotics", "source": "fixture"}}
+{"id": 7, "text": "Convolutional neural networks excel at image classification tasks.", "metadata": {"category": "systems", "source": "fixture"}}
+{"id": 8, "text": "Recurrent neural networks process sequential data like text and time series.", "metadata": {"category": "theory", "source": "fixture"}}
+{"id": 9, "text": "Transfer learning allows models trained on one task to be applied to another.", "metadata": {"category": "ai", "source": "fixture"}}
+{"id": 10, "text": "Generative adversarial networks learn to create realistic synthetic data.", "metadata": {"category": "ml", "source": "fixture"}}
+{"id": 11, "text": "Support vector machines find optimal hyperplanes for classification.", "metadata": {"category": "data", "source": "fixture"}}
+{"id": 12, "text": "Decision trees partition data using feature-based rules.", "metadata": {"category": "nlp", "source": "fixture"}}
+{"id": 13, "text": "Random forests combine multiple decision trees for robust predictions.", "metadata": {"category": "cv", "source": "fixture"}}
+{"id": 14, "text": "Gradient boosting iteratively improves predictions by correcting errors.", "metadata": {"category": "robotics", "source": "fixture"}}
+{"id": 15, "text": "Clustering algorithms group similar data points without labels.", "metadata": {"category": "systems", "source": "fixture"}}
+{"id": 16, "text": "Dimensionality reduction projects high-dimensional data to lower dimensions.", "metadata": {"category": "theory", "source": "fixture"}}
+{"id": 17, "text": "Bayesian inference updates beliefs based on observed evidence.", "metadata": {"category": "ai", "source": "fixture"}}
+{"id": 18, "text": "Graph neural networks operate on graph-structured data.", "metadata": {"category": "ml", "source": "fixture"}}
+{"id": 19, "text": "Attention mechanisms allow models to focus on relevant input parts.", "metadata": {"category": "data", "source": "fixture"}}
+{"id": 20, "text": "BERT uses bidirectional training to improve language understanding.", "metadata": {"category": "nlp", "source": "fixture"}}
+{"id": 21, "text": "GPT models generate coherent text through autoregressive prediction.", "metadata": {"category": "cv", "source": "fixture"}}
+{"id": 22, "text": "Word embeddings represent words as dense vectors in semantic space.", "metadata": {"category": "robotics", "source": "fixture"}}
+{"id": 23, "text": "Semantic search retrieves documents based on meaning rather than keywords.", "metadata": {"category": "systems", "source": "fixture"}}
+{"id": 24, "text": "Vector databases store and query high-dimensional embedding vectors.", "metadata": {"category": "theory", "source": "fixture"}}
+{"id": 25, "text": "Retrieval augmented generation combines retrieval with language generation.", "metadata": {"category": "ai", "source": "fixture"}}
+{"id": 26, "text": "Knowledge graphs represent facts as interconnected entity relationships.", "metadata": {"category": "ml", "source": "fixture"}}
+{"id": 27, "text": "Federated learning trains models on distributed data without centralizing it.", "metadata": {"category": "data", "source": "fixture"}}
+{"id": 28, "text": "Differential privacy adds noise to protect individual data in datasets.", "metadata": {"category": "nlp", "source": "fixture"}}
+{"id": 29, "text": "Adversarial examples fool neural networks with imperceptible perturbations.", "metadata": {"category": "cv", "source": "fixture"}}
+{"id": 30, "text": "Model distillation transfers knowledge from large to smaller models.", "metadata": {"category": "robotics", "source": "fixture"}}
+{"id": 31, "text": "Quantization reduces model precision to decrease memory and computation.", "metadata": {"category": "systems", "source": "fixture"}}
+{"id": 32, "text": "Pruning removes redundant parameters from neural networks.", "metadata": {"category": "theory", "source": "fixture"}}
+{"id": 33, "text": "Neural architecture search automates the design of neural network structures.", "metadata": {"category": "ai", "source": "fixture"}}
+{"id": 34, "text": "Meta-learning trains models to quickly adapt to new tasks with few examples.", "metadata": {"category": "ml", "source": "fixture"}}
+{"id": 35, "text": "Few-shot learning generalizes to new tasks with minimal training data.", "metadata": {"category": "data", "source": "fixture"}}
+{"id": 36, "text": "Zero-shot learning classifies inputs into classes not seen during training.", "metadata": {"category": "nlp", "source": "fixture"}}
+{"id": 37, "text": "Active learning selects the most informative samples for labeling.", "metadata": {"category": "cv", "source": "fixture"}}
+{"id": 38, "text": "Semi-supervised learning leverages unlabeled data alongside labeled samples.", "metadata": {"category": "robotics", "source": "fixture"}}
+{"id": 39, "text": "Self-supervised learning creates training signals from the data itself.", "metadata": {"category": "systems", "source": "fixture"}}
+{"id": 40, "text": "Contrastive learning learns representations by contrasting similar and different samples.", "metadata": {"category": "theory", "source": "fixture"}}
+{"id": 41, "text": "Multi-task learning trains models to perform multiple related tasks simultaneously.", "metadata": {"category": "ai", "source": "fixture"}}
+{"id": 42, "text": "Ensemble methods combine predictions from multiple models for better accuracy.", "metadata": {"category": "ml", "source": "fixture"}}
+{"id": 43, "text": "Hyperparameter optimization searches for the best model configuration.", "metadata": {"category": "data", "source": "fixture"}}
+{"id": 44, "text": "Cross-validation estimates model performance on unseen data.", "metadata": {"category": "nlp", "source": "fixture"}}
+{"id": 45, "text": "Regularization techniques prevent overfitting in machine learning models.", "metadata": {"category": "cv", "source": "fixture"}}
+{"id": 46, "text": "Batch normalization stabilizes training by normalizing layer activations.", "metadata": {"category": "robotics", "source": "fixture"}}
+{"id": 47, "text": "Dropout randomly deactivates neurons during training to prevent overfitting.", "metadata": {"category": "systems", "source": "fixture"}}
+{"id": 48, "text": "Adam optimizer adapts learning rates based on gradient history.", "metadata": {"category": "theory", "source": "fixture"}}
+{"id": 49, "text": "Learning rate scheduling adjusts the learning rate during training.", "metadata": {"category": "ai", "source": "fixture"}}
+{"id": 50, "text": "Early stopping halts training when validation performance stops improving.", "metadata": {"category": "ml", "source": "fixture"}}

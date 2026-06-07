@@ -1,0 +1,20 @@
+{"id": 1, "text": "What is machine learning?", "relevant_ids": [1, 2, 11, 12, 13, 14], "category": "ai"}
+{"id": 2, "text": "How do neural networks work?", "relevant_ids": [2, 3, 5, 6, 7, 8], "category": "ml"}
+{"id": 3, "text": "What are transformers in NLP?", "relevant_ids": [6, 19, 20, 21, 22], "category": "nlp"}
+{"id": 4, "text": "Explain retrieval augmented generation", "relevant_ids": [25, 23, 24], "category": "ai"}
+{"id": 5, "text": "What is transfer learning?", "relevant_ids": [9, 34, 35, 36], "category": "ml"}
+{"id": 6, "text": "How does computer vision work?", "relevant_ids": [4, 7], "category": "cv"}
+{"id": 7, "text": "What is reinforcement learning?", "relevant_ids": [5, 1], "category": "ml"}
+{"id": 8, "text": "Explain word embeddings and semantic search", "relevant_ids": [22, 23, 24], "category": "nlp"}
+{"id": 9, "text": "What is federated learning?", "relevant_ids": [27, 28], "category": "ai"}
+{"id": 10, "text": "How do you prevent overfitting?", "relevant_ids": [45, 46, 47, 50], "category": "ml"}
+{"id": 11, "text": "What are generative adversarial networks?", "relevant_ids": [10], "category": "ai"}
+{"id": 12, "text": "Explain vector databases for AI", "relevant_ids": [24, 23, 25], "category": "data"}
+{"id": 13, "text": "What is model quantization?", "relevant_ids": [32, 31, 30], "category": "systems"}
+{"id": 14, "text": "How does self-supervised learning work?", "relevant_ids": [39, 40, 38], "category": "ml"}
+{"id": 15, "text": "What is the attention mechanism?", "relevant_ids": [19, 6, 20], "category": "nlp"}
+{"id": 16, "text": "Explain few-shot learning", "relevant_ids": [35, 34, 36], "category": "ml"}
+{"id": 17, "text": "What is model distillation?", "relevant_ids": [30, 31, 32], "category": "systems"}
+{"id": 18, "text": "How do knowledge graphs work?", "relevant_ids": [26], "category": "data"}
+{"id": 19, "text": "What is Bayesian inference?", "relevant_ids": [17], "category": "theory"}
+{"id": 20, "text": "Explain ensemble methods in machine learning", "relevant_ids": [42, 12, 13, 14], "category": "ml"}
