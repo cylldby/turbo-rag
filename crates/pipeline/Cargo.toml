@@ -1,0 +1,30 @@
+[package]
+name    = "pipeline"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+common    = { path = "../common" }
+anyhow    = { workspace = true }
+tokio     = { workspace = true }
+rayon     = { workspace = true }
+indicatif = { workspace = true }
+tracing   = { workspace = true }
+futures   = "0.3"
+
+[dev-dependencies]
+embedder   = { path = "../embedder" }
+store      = { path = "../store", features = ["store-lance"] }
+blob       = { path = "../blob" }
+tempfile   = "3"
+serde      = { workspace = true }
+serde_json = { workspace = true }
+
+[features]
+default     = []
+integration = ["store/store-lance", "embedder/backend-openai-compat", "dep:blob"]
+e2e         = ["integration"]
+
+[dependencies.blob]
+path     = "../blob"
+optional = true
