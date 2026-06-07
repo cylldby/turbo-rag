@@ -1,0 +1,43 @@
+[package]
+name    = "bench"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "bench_helpers"
+path = "src/lib.rs"
+
+[dependencies]
+common     = { path = "../common" }
+embedder   = { path = "../embedder", features = ["backend-synthetic", "backend-fastembed"] }
+compressor = { path = "../compressor" }
+blob       = { path = "../blob" }
+store      = { path = "../store", features = ["store-lance"] }
+pipeline   = { path = "../pipeline" }
+tokio      = { workspace = true }
+rand       = { workspace = true }
+anyhow     = { workspace = true }
+
+[dev-dependencies]
+criterion = { version = "0.5", features = ["async_tokio"] }
+tempfile  = "3"
+
+[[bench]]
+name    = "embed_throughput"
+harness = false
+
+[[bench]]
+name    = "compress_speed"
+harness = false
+
+[[bench]]
+name    = "turbovec_search"
+harness = false
+
+[[bench]]
+name    = "lancedb_search"
+harness = false
+
+[[bench]]
+name    = "pipeline_throughput"
+harness = false
