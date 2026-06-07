@@ -6,9 +6,9 @@ pub use mock::MockEmbedder;
 // synthetic is always compiled; the EmbeddingBackend impl is feature-gated but
 // random_unit_vec is a free function used by the bench command.
 pub mod synthetic;
+pub use synthetic::random_unit_vec;
 #[cfg(feature = "backend-synthetic")]
 pub use synthetic::SyntheticEmbedder;
-pub use synthetic::random_unit_vec;
 
 #[cfg(feature = "backend-fastembed")]
 mod fastembed_backend;

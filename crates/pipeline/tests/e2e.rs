@@ -124,10 +124,7 @@ mod e2e {
                 .expect("failed to embed query");
 
             let req = SearchRequest::vector(&query_vec, k);
-            let results = store
-                .search(&req)
-                .await
-                .expect("search failed");
+            let results = store.search(&req).await.expect("search failed");
 
             assert!(
                 results.len() <= k,
@@ -136,8 +133,7 @@ mod e2e {
             );
 
             // Check whether any relevant_id appears in the top-k
-            let result_ids: std::collections::HashSet<u64> =
-                results.iter().map(|r| r.id).collect();
+            let result_ids: std::collections::HashSet<u64> = results.iter().map(|r| r.id).collect();
             let hit = query
                 .relevant_ids
                 .iter()

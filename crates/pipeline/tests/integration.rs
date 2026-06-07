@@ -62,7 +62,11 @@ mod integration {
                 .await
                 .expect("failed to create LanceDbStore"),
         );
-        let store = Arc::new(HybridStore::new(hot.clone(), cold.clone(), SearchMode::Auto));
+        let store = Arc::new(HybridStore::new(
+            hot.clone(),
+            cold.clone(),
+            SearchMode::Auto,
+        ));
 
         // Use batch_size=1 so WireMock's single-embedding stub always satisfies the request
         let pipeline = IngestionPipeline::new(embedder, store.clone(), 1);

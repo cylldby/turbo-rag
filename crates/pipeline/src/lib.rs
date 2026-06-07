@@ -1,6 +1,6 @@
 use common::{
-    compression_ratio, Document, EmbeddedDoc, EmbeddingBackend, PipelineStats, Result,
-    TurboError, VectorStore,
+    compression_ratio, Document, EmbeddedDoc, EmbeddingBackend, PipelineStats, Result, TurboError,
+    VectorStore,
 };
 use futures::stream::{self, StreamExt};
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
@@ -23,7 +23,13 @@ impl IngestionPipeline {
         store: Arc<dyn VectorStore>,
         batch_size: usize,
     ) -> Self {
-        Self { embedder, store, batch_size, concurrency: 4, bits: 4 }
+        Self {
+            embedder,
+            store,
+            batch_size,
+            concurrency: 4,
+            bits: 4,
+        }
     }
 
     pub fn with_concurrency(mut self, concurrency: usize) -> Self {
@@ -45,11 +51,9 @@ impl IngestionPipeline {
         let mp = MultiProgress::new();
         let embed_pb = mp.add(ProgressBar::new(total as u64));
         embed_pb.set_style(
-            ProgressStyle::with_template(
-                "embed  [{bar:35.cyan/blue}] {pos}/{len} docs  {per_sec}",
-            )
-            .unwrap()
-            .progress_chars("█▓░"),
+            ProgressStyle::with_template("embed  [{bar:35.cyan/blue}] {pos}/{len} docs  {per_sec}")
+                .unwrap()
+                .progress_chars("█▓░"),
         );
 
         let start = Instant::now();
@@ -103,16 +107,13 @@ impl IngestionPipeline {
         // ── Phase 3: insert into store ───────────────────────────────────────
         let store_pb = mp.add(ProgressBar::new(total as u64));
         store_pb.set_style(
-            ProgressStyle::with_template(
-                "store  [{bar:35.green/black}] {pos}/{len} docs",
-            )
-            .unwrap()
-            .progress_chars("█▓░"),
+            ProgressStyle::with_template("store  [{bar:35.green/black}] {pos}/{len} docs")
+                .unwrap()
+                .progress_chars("█▓░"),
         );
 
         for batch_result in embedded_batches {
-            let batch =
-                batch_result.map_err(|e| TurboError::Pipeline(e.to_string()))?;
+            let batch = batch_result.map_err(|e| TurboError::Pipeline(e.to_string()))?;
             let n = batch.len();
             self.store
                 .upsert(&batch)
@@ -192,8 +193,7 @@ mod tests {
         let dim = 32;
         let embedder = Arc::new(MockEmbedder::new(dim));
         let store = Arc::new(TurboVecStore::new_in_memory("test", dim, 4));
-        let pipeline =
-            IngestionPipeline::new(embedder, store.clone(), 16).with_concurrency(2);
+        let pipeline = IngestionPipeline::new(embedder, store.clone(), 16).with_concurrency(2);
         let stats = pipeline.run(make_docs(100)).await.unwrap();
         assert_eq!(stats.total_docs, 100);
         assert_eq!(store.doc_count().await.unwrap(), 100);
@@ -204,8 +204,7 @@ mod tests {
         let dim = 768;
         let embedder = Arc::new(MockEmbedder::new(dim));
         let store = Arc::new(TurboVecStore::new_in_memory("test", dim, 4));
-        let pipeline =
-            IngestionPipeline::new(embedder, store, 10).with_bits(4);
+        let pipeline = IngestionPipeline::new(embedder, store, 10).with_bits(4);
         let stats = pipeline.run(make_docs(5)).await.unwrap();
         // 768-dim, 4-bit → 8x compression ratio
         assert!((stats.compression_ratio - 8.0).abs() < 0.01);
@@ -230,8 +229,16 @@ mod tests {
         let req = common::SearchRequest::vector(&query, 3);
         let results = lance.search(&req).await.unwrap();
         for r in &results {
-            assert!(!r.text.starts_with(' '), "text should be trimmed: '{}'", r.text);
-            assert!(!r.text.ends_with(' '), "text should be trimmed: '{}'", r.text);
+            assert!(
+                !r.text.starts_with(' '),
+                "text should be trimmed: '{}'",
+                r.text
+            );
+            assert!(
+                !r.text.ends_with(' '),
+                "text should be trimmed: '{}'",
+                r.text
+            );
         }
     }
 }

@@ -31,16 +31,20 @@ fn bench_pipeline(c: &mut Criterion) {
         let docs = make_docs(n);
         let label = format!("{n}docs_b{batch_size}");
         group.throughput(Throughput::Elements(n as u64));
-        group.bench_with_input(BenchmarkId::new("synthetic_turbovec", &label), &(), |b, _| {
-            b.to_async(&rt).iter(|| async {
-                let embedder: Arc<dyn EmbeddingBackend> = Arc::new(SyntheticEmbedder::new(dim));
-                let blob = Arc::new(InMemoryBackend::new());
-                let store: Arc<dyn VectorStore> =
-                    Arc::new(TurboVecStore::with_blob("bench", blob, dim, 4));
-                let pipeline = IngestionPipeline::new(embedder, store, batch_size);
-                pipeline.run(docs.clone()).await.unwrap()
-            });
-        });
+        group.bench_with_input(
+            BenchmarkId::new("synthetic_turbovec", &label),
+            &(),
+            |b, _| {
+                b.to_async(&rt).iter(|| async {
+                    let embedder: Arc<dyn EmbeddingBackend> = Arc::new(SyntheticEmbedder::new(dim));
+                    let blob = Arc::new(InMemoryBackend::new());
+                    let store: Arc<dyn VectorStore> =
+                        Arc::new(TurboVecStore::with_blob("bench", blob, dim, 4));
+                    let pipeline = IngestionPipeline::new(embedder, store, batch_size);
+                    pipeline.run(docs.clone()).await.unwrap()
+                });
+            },
+        );
     }
     group.finish();
 }

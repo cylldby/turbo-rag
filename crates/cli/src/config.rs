@@ -12,8 +12,8 @@ pub struct AppConfig {
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct EmbeddingConfig {
-    pub backend: String,       // fastembed | openai-compat | synthetic
-    pub base_url: String,      // for openai-compat
+    pub backend: String,  // fastembed | openai-compat | synthetic
+    pub base_url: String, // for openai-compat
     pub api_key: Option<String>,
     pub model: String,
     pub dim: usize,
@@ -21,14 +21,14 @@ pub struct EmbeddingConfig {
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct BlobConfig {
-    pub backend: String,       // local | s3
+    pub backend: String, // local | s3
     pub local_path: String,
     pub bucket: String,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct LanceConfig {
-    pub uri: String,           // ./data/lance or s3://bucket/lance
+    pub uri: String, // ./data/lance or s3://bucket/lance
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -40,7 +40,7 @@ pub struct PipelineConfig {
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct SearchConfig {
-    pub mode: String,          // hot | cold | race | federated | auto
+    pub mode: String, // hot | cold | race | federated | auto
 }
 
 impl Default for AppConfig {

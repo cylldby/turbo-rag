@@ -8,7 +8,9 @@ use std::sync::Arc;
 use tokio::runtime::Runtime;
 
 fn make_texts(n: usize) -> Vec<String> {
-    (0..n).map(|i| format!("document number {i} for embedding benchmark")).collect()
+    (0..n)
+        .map(|i| format!("document number {i} for embedding benchmark"))
+        .collect()
 }
 
 fn bench_synthetic_embed(c: &mut Criterion) {
@@ -22,9 +24,8 @@ fn bench_synthetic_embed(c: &mut Criterion) {
             let texts = make_texts(batch);
             group.throughput(Throughput::Elements(batch as u64));
             group.bench_with_input(BenchmarkId::new("synthetic", batch), &(), |b, _| {
-                b.to_async(&rt).iter(|| async {
-                    embedder.embed_batch(&texts).await.unwrap()
-                });
+                b.to_async(&rt)
+                    .iter(|| async { embedder.embed_batch(&texts).await.unwrap() });
             });
         }
         group.finish();

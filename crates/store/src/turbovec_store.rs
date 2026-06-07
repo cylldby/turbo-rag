@@ -1,11 +1,16 @@
 use async_trait::async_trait;
 use blob::InMemoryBackend;
 use bytes::Bytes;
-use common::{BlobBackend, EmbeddedDoc, Result, ScoredDoc, SearchRequest, SearchSource,
-             SearchType, TurboError, VectorStore};
+use common::{
+    BlobBackend, EmbeddedDoc, Result, ScoredDoc, SearchRequest, SearchSource, SearchType,
+    TurboError, VectorStore,
+};
 use compressor::QuantizedIndex;
 use std::collections::HashMap;
-use std::sync::{Arc, atomic::{AtomicBool, AtomicUsize, Ordering}};
+use std::sync::{
+    atomic::{AtomicBool, AtomicUsize, Ordering},
+    Arc,
+};
 use tokio::sync::RwLock;
 
 /// In-memory ANN index backed by turbovec TurboQuant.
@@ -60,7 +65,11 @@ impl TurboVecStore {
 
     /// Persist index + metadata (count, dim, bits, doc texts) to blob storage.
     pub async fn flush(&self) -> Result<()> {
-        let bytes = self.index.read().await.to_bytes()
+        let bytes = self
+            .index
+            .read()
+            .await
+            .to_bytes()
             .map_err(|e| TurboError::Store(e.to_string()))?;
         self.blob.put(&self.index_key(), bytes).await?;
 
@@ -75,7 +84,9 @@ impl TurboVecStore {
             "count": count, "dim": self.dim, "bits": self.bits,
             "texts": texts_obj
         });
-        self.blob.put(&self.meta_key(), Bytes::from(meta.to_string())).await
+        self.blob
+            .put(&self.meta_key(), Bytes::from(meta.to_string()))
+            .await
     }
 
     /// Load index (count, text map) from blob storage.
@@ -136,7 +147,11 @@ impl VectorStore for TurboVecStore {
                 "TurboVecStore only supports SearchType::Vector".into(),
             ));
         }
-        let hits = self.index.read().await.search(request.query_embedding, request.k);
+        let hits = self
+            .index
+            .read()
+            .await
+            .search(request.query_embedding, request.k);
         let texts = self.texts.read().await;
         Ok(hits
             .into_iter()
@@ -153,9 +168,11 @@ impl VectorStore for TurboVecStore {
     async fn delete(&self, id: u64) -> Result<()> {
         self.index.write().await.remove(id);
         self.texts.write().await.remove(&id);
-        let _ = self.count.fetch_update(Ordering::Relaxed, Ordering::Relaxed, |n| {
-            Some(n.saturating_sub(1))
-        });
+        let _ = self
+            .count
+            .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |n| {
+                Some(n.saturating_sub(1))
+            });
         Ok(())
     }
 

@@ -1,13 +1,16 @@
 mod backend;
-mod config;
 mod commands;
+mod config;
 pub mod tui;
 
 use anyhow::Result;
 use clap::{Parser, Subcommand};
 
 #[derive(Parser)]
-#[command(name = "turbo-rag", about = "RAG pipeline: turbovec compression + LanceDB retrieval")]
+#[command(
+    name = "turbo-rag",
+    about = "RAG pipeline: turbovec compression + LanceDB retrieval"
+)]
 struct Cli {
     #[command(subcommand)]
     command: Commands,
@@ -42,7 +45,11 @@ enum Commands {
         corpus: Option<std::path::PathBuf>,
         #[arg(long)]
         queries: Option<std::path::PathBuf>,
-        #[arg(long, default_value = "10000", help = "Comma-separated corpus sizes, e.g. 10000,100000")]
+        #[arg(
+            long,
+            default_value = "10000",
+            help = "Comma-separated corpus sizes, e.g. 10000,100000"
+        )]
         scales: String,
         #[arg(long, help = "Enable ratatui live TUI")]
         tui: bool,
@@ -76,15 +83,24 @@ async fn main() -> Result<()> {
 
     let cli = Cli::parse();
     match cli.command {
-        Commands::Ingest { input, batch_size, bits, tui } => {
-            commands::ingest(input, batch_size, bits, tui).await
-        }
-        Commands::Query { text, top_k, mode, search_type } => {
-            commands::query(text, top_k, &mode, &search_type).await
-        }
-        Commands::Bench { corpus, queries, scales, tui } => {
-            commands::bench(corpus, queries, &scales, tui).await
-        }
+        Commands::Ingest {
+            input,
+            batch_size,
+            bits,
+            tui,
+        } => commands::ingest(input, batch_size, bits, tui).await,
+        Commands::Query {
+            text,
+            top_k,
+            mode,
+            search_type,
+        } => commands::query(text, top_k, &mode, &search_type).await,
+        Commands::Bench {
+            corpus,
+            queries,
+            scales,
+            tui,
+        } => commands::bench(corpus, queries, &scales, tui).await,
         Commands::Doctor => commands::doctor().await,
     }
 }

@@ -20,7 +20,9 @@ mod embed_integration {
     }
 
     fn ollama_available() -> bool {
-        std::env::var("OLLAMA_AVAILABLE").map(|v| v == "1").unwrap_or(false)
+        std::env::var("OLLAMA_AVAILABLE")
+            .map(|v| v == "1")
+            .unwrap_or(false)
     }
 
     // ── WireMock tests (always required in integration mode) ─────────────────
@@ -33,7 +35,10 @@ mod embed_integration {
             "mock-embed",
             768,
         );
-        let result = backend.embed_batch(&["hello world".to_string()]).await.unwrap();
+        let result = backend
+            .embed_batch(&["hello world".to_string()])
+            .await
+            .unwrap();
         assert_eq!(result.len(), 1, "should return exactly one embedding");
         assert_eq!(result[0].len(), 768, "embedding dim should be 768");
     }
@@ -61,8 +66,13 @@ mod embed_integration {
             768,
         );
         let result = backend.embed_batch(&["test".to_string()]).await.unwrap();
-        let all_valid = result[0].iter().all(|v| v.is_finite() && *v >= -1.0 && *v <= 1.0);
-        assert!(all_valid, "all embedding values should be finite floats in [-1, 1]");
+        let all_valid = result[0]
+            .iter()
+            .all(|v| v.is_finite() && *v >= -1.0 && *v <= 1.0);
+        assert!(
+            all_valid,
+            "all embedding values should be finite floats in [-1, 1]"
+        );
     }
 
     // ── Ollama live tests (opt-in via OLLAMA_AVAILABLE=1) ────────────────────
@@ -80,11 +90,17 @@ mod embed_integration {
             768,
         );
         assert_eq!(backend.dim(), 768);
-        let result = backend.embed_batch(&["What is machine learning?".to_string()]).await;
+        let result = backend
+            .embed_batch(&["What is machine learning?".to_string()])
+            .await;
         match result {
             Ok(vecs) => {
                 assert_eq!(vecs.len(), 1);
-                assert_eq!(vecs[0].len(), 768, "nomic-embed-text should produce 768-dim vectors");
+                assert_eq!(
+                    vecs[0].len(),
+                    768,
+                    "nomic-embed-text should produce 768-dim vectors"
+                );
                 let norm: f32 = vecs[0].iter().map(|x| x * x).sum::<f32>().sqrt();
                 assert!(norm > 0.0, "embedding should be non-zero");
             }
@@ -105,7 +121,10 @@ mod embed_integration {
         ];
         let vecs = backend.embed_batch(&texts).await.unwrap();
         let sim = cosine_similarity(&vecs[0], &vecs[1]);
-        assert!(sim > 0.999, "identical texts should have cosine~1, got {sim}");
+        assert!(
+            sim > 0.999,
+            "identical texts should have cosine~1, got {sim}"
+        );
     }
 
     #[tokio::test]
@@ -121,6 +140,9 @@ mod embed_integration {
         ];
         let vecs = backend.embed_batch(&texts).await.unwrap();
         let sim = cosine_similarity(&vecs[0], &vecs[1]);
-        assert!(sim < 0.9, "unrelated texts should have lower cosine similarity, got {sim}");
+        assert!(
+            sim < 0.9,
+            "unrelated texts should have lower cosine similarity, got {sim}"
+        );
     }
 }

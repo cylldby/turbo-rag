@@ -30,8 +30,9 @@ pub async fn ingest(input: PathBuf, batch_size: usize, bits: usize, _use_tui: bo
     let store = backend::build_store(&cfg).await?;
 
     // ── run pipeline ─────────────────────────────────────────────────────────
-    let pipeline = IngestionPipeline::new(embedder, store.clone() as Arc<dyn VectorStore>, batch_size)
-        .with_bits(bits);
+    let pipeline =
+        IngestionPipeline::new(embedder, store.clone() as Arc<dyn VectorStore>, batch_size)
+            .with_bits(bits);
     let stats = pipeline.run(docs).await?;
     stats.print_report();
 
@@ -78,7 +79,9 @@ pub async fn query(text: String, top_k: usize, mode: &str, search_type: &str) ->
 
     // ── search ───────────────────────────────────────────────────────────────
     let t1 = Instant::now();
-    let results = (store.clone() as Arc<dyn VectorStore>).search(&search_req).await?;
+    let results = (store.clone() as Arc<dyn VectorStore>)
+        .search(&search_req)
+        .await?;
     let search_ms = t1.elapsed().as_millis();
 
     // ── emit metrics ─────────────────────────────────────────────────────────
@@ -88,18 +91,26 @@ pub async fn query(text: String, top_k: usize, mode: &str, search_type: &str) ->
     histogram!("turborag_search_latency_ms", "mode" => mode.to_string()).record(search_ms as f64);
     if let Some(r) = results.first() {
         gauge!("turborag_search_source",
-            "source" => format!("{:?}", r.source)).set(1.0);
+            "source" => format!("{:?}", r.source))
+        .set(1.0);
     }
 
     // ── print results ─────────────────────────────────────────────────────────
     println!("\nQuery : {text:?}");
     println!("Mode  : {mode}  |  Type: {search_type}  |  Top-{top_k}");
-    println!("Times : embed {embed_ms}ms  search {search_ms}ms  total {}ms", embed_ms + search_ms);
+    println!(
+        "Times : embed {embed_ms}ms  search {search_ms}ms  total {}ms",
+        embed_ms + search_ms
+    );
     println!();
-    println!("{:<4} {:<10} {:<8} {}", "#", "id", "score", "text");
+    println!("{:<4} {:<10} {:<8} text", "#", "id", "score");
     println!("{}", "─".repeat(72));
     for (i, r) in results.iter().enumerate() {
-        let snippet = if r.text.len() > 55 { &r.text[..55] } else { &r.text };
+        let snippet = if r.text.len() > 55 {
+            &r.text[..55]
+        } else {
+            &r.text
+        };
         println!("{:<4} {:<10} {:<8.4} {}", i + 1, r.id, r.score, snippet);
     }
     if results.is_empty() {
@@ -150,9 +161,7 @@ pub async fn bench(
 
         // ── build local LanceDB index ────────────────────────────────────────
         let dir = tempfile::tempdir()?;
-        let lance = Arc::new(
-            LanceDbStore::new(dir.path().to_str().unwrap(), "bench", dim).await?,
-        );
+        let lance = Arc::new(LanceDbStore::new(dir.path().to_str().unwrap(), "bench", dim).await?);
 
         // ── ingest corpus (load from file or generate synthetic) ─────────────
         let docs = if let Some(ref path) = corpus {
@@ -231,7 +240,11 @@ pub async fn doctor() -> Result<()> {
         "fastembed" | "synthetic" | "mock" => Ok("local (no network)".to_string()),
         other => Err(format!("unknown backend: {other}")),
     };
-    health_row("embedding", &format!("{} / {}", cfg.embedding.backend, cfg.embedding.model), embed_status);
+    health_row(
+        "embedding",
+        &format!("{} / {}", cfg.embedding.backend, cfg.embedding.model),
+        embed_status,
+    );
 
     let blob_status = match cfg.blob.backend.as_str() {
         "local" => match std::fs::create_dir_all(&cfg.blob.local_path) {
@@ -280,8 +293,8 @@ fn load_jsonl(path: &PathBuf) -> Result<Vec<Document>> {
         metadata: std::collections::HashMap<String, String>,
     }
 
-    let file = std::fs::File::open(path)
-        .map_err(|e| anyhow::anyhow!("cannot open {path:?}: {e}"))?;
+    let file =
+        std::fs::File::open(path).map_err(|e| anyhow::anyhow!("cannot open {path:?}: {e}"))?;
     let reader = BufReader::new(file);
     let mut docs = Vec::new();
 
@@ -290,16 +303,18 @@ fn load_jsonl(path: &PathBuf) -> Result<Vec<Document>> {
         if line.trim().is_empty() {
             continue;
         }
-        let raw: RawDoc = serde_json::from_str(&line)
-            .map_err(|e| anyhow::anyhow!("line {}: {e}", i + 1))?;
+        let raw: RawDoc =
+            serde_json::from_str(&line).map_err(|e| anyhow::anyhow!("line {}: {e}", i + 1))?;
 
         // Resolve id: numeric id > string id > BEIR _id > line number fallback
         let id: u64 = match &raw.id {
             Some(serde_json::Value::Number(n)) => n.as_u64().unwrap_or(i as u64),
             Some(serde_json::Value::String(s)) => s.parse().unwrap_or(i as u64),
-            _ => raw.beir_id.as_deref()
-                    .and_then(|s| s.parse().ok())
-                    .unwrap_or(i as u64),
+            _ => raw
+                .beir_id
+                .as_deref()
+                .and_then(|s| s.parse().ok())
+                .unwrap_or(i as u64),
         };
 
         // Combine title + text if both present (common in BEIR datasets)
@@ -308,7 +323,11 @@ fn load_jsonl(path: &PathBuf) -> Result<Vec<Document>> {
             None => raw.text,
         };
 
-        docs.push(Document { id, text, metadata: raw.metadata });
+        docs.push(Document {
+            id,
+            text,
+            metadata: raw.metadata,
+        });
     }
     Ok(docs)
 }
@@ -323,7 +342,7 @@ fn generate_synthetic_docs(n: usize, _dim: usize) -> Vec<Document> {
         .collect()
 }
 
-fn percentiles(samples: &mut Vec<u128>) -> (u128, u128) {
+fn percentiles(samples: &mut [u128]) -> (u128, u128) {
     samples.sort_unstable();
     let p50 = samples[samples.len() / 2];
     let p99 = samples[samples.len() * 99 / 100];

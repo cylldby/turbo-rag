@@ -9,7 +9,10 @@ use tracing::info;
 pub async fn build_embedder(cfg: &AppConfig) -> anyhow::Result<Arc<dyn EmbeddingBackend>> {
     match cfg.embedding.backend.as_str() {
         "fastembed" => {
-            info!("embedding backend: fastembed (local ONNX, dim={})", cfg.embedding.dim);
+            info!(
+                "embedding backend: fastembed (local ONNX, dim={})",
+                cfg.embedding.dim
+            );
             let backend = match cfg.embedding.dim {
                 1024 => FastEmbedBackend::mxbai_large()?,
                 384 => FastEmbedBackend::bge_small_en()?,
@@ -30,11 +33,16 @@ pub async fn build_embedder(cfg: &AppConfig) -> anyhow::Result<Arc<dyn Embedding
             )))
         }
         "synthetic" => {
-            info!("embedding backend: synthetic (random unit-norm, dim={})", cfg.embedding.dim);
+            info!(
+                "embedding backend: synthetic (random unit-norm, dim={})",
+                cfg.embedding.dim
+            );
             Ok(Arc::new(SyntheticEmbedder::new(cfg.embedding.dim)))
         }
         "mock" => Ok(Arc::new(MockEmbedder::new(cfg.embedding.dim))),
-        other => anyhow::bail!("unknown embedding backend: '{other}' (valid: fastembed, openai-compat, synthetic)"),
+        other => anyhow::bail!(
+            "unknown embedding backend: '{other}' (valid: fastembed, openai-compat, synthetic)"
+        ),
     }
 }
 
@@ -80,7 +88,10 @@ pub async fn build_store(cfg: &AppConfig) -> anyhow::Result<Arc<HybridStore>> {
         "from-blob" => {
             info!("load strategy: from-blob — loading turbovec index");
             match hot.load_from_blob().await {
-                Ok(_) => info!("turbovec index loaded ({} docs)", hot.doc_count().await.unwrap_or(0)),
+                Ok(_) => info!(
+                    "turbovec index loaded ({} docs)",
+                    hot.doc_count().await.unwrap_or(0)
+                ),
                 Err(e) => info!("turbovec index not found, starting fresh: {e}"),
             }
         }

@@ -73,7 +73,9 @@ impl BlobBackend for LocalFsBackend {
     async fn put(&self, key: &str, data: Bytes) -> Result<()> {
         let path = self.base_dir.join(key);
         if let Some(parent) = path.parent() {
-            tokio::fs::create_dir_all(parent).await.map_err(TurboError::Io)?;
+            tokio::fs::create_dir_all(parent)
+                .await
+                .map_err(TurboError::Io)?;
         }
         tokio::fs::write(&path, data).await.map_err(TurboError::Io)
     }

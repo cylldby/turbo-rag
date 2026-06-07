@@ -85,6 +85,9 @@ mod tests {
         let v2 = random_unit_vec(64);
         // Probability of collision is astronomically small
         let dot: f32 = v1.iter().zip(&v2).map(|(a, b)| a * b).sum();
-        assert!(dot.abs() < 0.99, "two random unit vectors should not be identical");
+        assert!(
+            dot.abs() < 0.99,
+            "two random unit vectors should not be identical"
+        );
     }
 }

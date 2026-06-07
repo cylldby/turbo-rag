@@ -10,8 +10,8 @@ mod store_integration {
     use blob::S3Backend;
     use bytes::Bytes;
     use common::{BlobBackend, EmbeddedDoc, SearchRequest, SearchSource, VectorStore};
-    use store::{LanceDbStore, TurboVecStore};
     use std::sync::Arc;
+    use store::{LanceDbStore, TurboVecStore};
 
     // ── helpers ──────────────────────────────────────────────────────────────
 
@@ -90,7 +90,10 @@ mod store_integration {
         let req = SearchRequest::vector(&query, 5);
         let results = store.search(&req).await.unwrap();
         assert_eq!(results.len(), 5);
-        assert!(results.iter().any(|r| r.id == 42), "query vec should find its own doc");
+        assert!(
+            results.iter().any(|r| r.id == 42),
+            "query vec should find its own doc"
+        );
         assert_eq!(results[0].source, SearchSource::LanceDb);
 
         store.delete(42).await.unwrap();
@@ -118,10 +121,7 @@ mod store_integration {
     #[tokio::test]
     async fn lancedb_minio_insert_and_query() {
         let bucket = std::env::var("BLOB_BUCKET").unwrap_or_else(|_| "turbo-rag-dev".into());
-        let lance_uri = format!(
-            "s3://{bucket}/lance-test/{}",
-            uid("lancedb")
-        );
+        let lance_uri = format!("s3://{bucket}/lance-test/{}", uid("lancedb"));
         // LanceDB reads AWS_ENDPOINT_URL / credentials from env (same as object_store)
         let dim = 32;
         match LanceDbStore::new(&lance_uri, "docs", dim).await {
@@ -132,7 +132,10 @@ mod store_integration {
                 let query = d[10].embedding.clone();
                 let req = SearchRequest::vector(&query, 3);
                 let results = store.search(&req).await.unwrap();
-                assert!(!results.is_empty(), "S3-backed LanceDB should return results");
+                assert!(
+                    !results.is_empty(),
+                    "S3-backed LanceDB should return results"
+                );
             }
             Err(e) => {
                 // LanceDB S3 requires specific env vars; skip gracefully if not configured
@@ -152,18 +155,30 @@ mod store_integration {
 
         // Insert docs with distinct keywords
         let d = vec![
-            EmbeddedDoc { id: 1, text: "turbovec vector quantization compression".into(),
-                embedding: vec![1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                metadata: Default::default() },
-            EmbeddedDoc { id: 2, text: "lancedb vector database retrieval".into(),
-                embedding: vec![0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                metadata: Default::default() },
-            EmbeddedDoc { id: 3, text: "rust programming systems language".into(),
-                embedding: vec![0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                metadata: Default::default() },
+            EmbeddedDoc {
+                id: 1,
+                text: "turbovec vector quantization compression".into(),
+                embedding: vec![
+                    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                ],
+                metadata: Default::default(),
+            },
+            EmbeddedDoc {
+                id: 2,
+                text: "lancedb vector database retrieval".into(),
+                embedding: vec![
+                    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                ],
+                metadata: Default::default(),
+            },
+            EmbeddedDoc {
+                id: 3,
+                text: "rust programming systems language".into(),
+                embedding: vec![
+                    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                ],
+                metadata: Default::default(),
+            },
         ];
         store.upsert(&d).await.unwrap();
 
@@ -172,6 +187,9 @@ mod store_integration {
         let req = SearchRequest::bm25(&query_vec, "turbovec", 3);
         let results = store.search(&req).await.unwrap();
         // BM25 implementation in M4 falls back to vector; verify it at minimum returns results
-        assert!(!results.is_empty(), "BM25/fallback search must return results");
+        assert!(
+            !results.is_empty(),
+            "BM25/fallback search must return results"
+        );
     }
 }

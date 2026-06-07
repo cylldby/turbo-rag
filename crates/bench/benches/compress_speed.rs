@@ -86,5 +86,10 @@ fn bench_compression_ratio(c: &mut Criterion) {
     group.finish();
 }
 
-criterion_group!(benches, bench_compress_add, bench_compress_roundtrip, bench_compression_ratio);
+criterion_group!(
+    benches,
+    bench_compress_add,
+    bench_compress_roundtrip,
+    bench_compression_ratio
+);
 criterion_main!(benches);

@@ -244,7 +244,10 @@ mod tests {
     fn cosine_self_is_one() {
         let v = vec![1.0f32, 2.0, 3.0, 4.0];
         let sim = cosine_similarity(&v, &v);
-        assert!((sim - 1.0).abs() < 1e-6, "cosine(v,v) should be 1.0, got {sim}");
+        assert!(
+            (sim - 1.0).abs() < 1e-6,
+            "cosine(v,v) should be 1.0, got {sim}"
+        );
     }
 
     #[test]

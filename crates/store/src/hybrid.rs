@@ -73,10 +73,16 @@ impl VectorStore for HybridStore {
                     let (hot_r, cold_r) =
                         tokio::join!(self.hot.search(request), self.cold.search(request));
                     let mut all: Vec<ScoredDoc> = Vec::new();
-                    if let Ok(mut r) = hot_r { all.append(&mut r); }
-                    if let Ok(mut r) = cold_r { all.append(&mut r); }
+                    if let Ok(mut r) = hot_r {
+                        all.append(&mut r);
+                    }
+                    if let Ok(mut r) = cold_r {
+                        all.append(&mut r);
+                    }
                     all.sort_by(|a, b| {
-                        b.score.partial_cmp(&a.score).unwrap_or(std::cmp::Ordering::Equal)
+                        b.score
+                            .partial_cmp(&a.score)
+                            .unwrap_or(std::cmp::Ordering::Equal)
                     });
                     let mut seen = std::collections::HashSet::new();
                     all.retain(|doc| seen.insert(doc.id));
@@ -146,9 +152,17 @@ mod tests {
         let (store, _dir) = make_hybrid(32).await;
         store.upsert(&docs(50, 32)).await.unwrap();
         // hot count via Arc
-        assert_eq!(store.hot.doc_count().await.unwrap(), 50, "turbovec should have 50 docs");
+        assert_eq!(
+            store.hot.doc_count().await.unwrap(),
+            50,
+            "turbovec should have 50 docs"
+        );
         // cold count via hybrid (delegates to LanceDB)
-        assert_eq!(store.doc_count().await.unwrap(), 50, "lancedb should have 50 docs");
+        assert_eq!(
+            store.doc_count().await.unwrap(),
+            50,
+            "lancedb should have 50 docs"
+        );
     }
 
     #[tokio::test]
@@ -160,7 +174,11 @@ mod tests {
         let req = SearchRequest::vector(&query, 5);
         let results = store.search(&req).await.unwrap();
         assert!(!results.is_empty());
-        assert_eq!(results[0].source, SearchSource::TurboVec, "auto mode should use turbovec when warm");
+        assert_eq!(
+            results[0].source,
+            SearchSource::TurboVec,
+            "auto mode should use turbovec when warm"
+        );
     }
 
     #[tokio::test]
@@ -168,7 +186,12 @@ mod tests {
         let dim = 32;
         let dir = tempfile::tempdir().unwrap();
         let uri = dir.path().to_str().unwrap().to_string();
-        let hot = Arc::new(TurboVecStore::with_blob("h", Arc::new(InMemoryBackend::new()), dim, 4));
+        let hot = Arc::new(TurboVecStore::with_blob(
+            "h",
+            Arc::new(InMemoryBackend::new()),
+            dim,
+            4,
+        ));
         let cold = Arc::new(LanceDbStore::new(&uri, "docs", dim).await.unwrap());
         let store = HybridStore::new(hot, cold, SearchMode::Cold);
         store.upsert(&docs(20, dim)).await.unwrap();
@@ -176,7 +199,11 @@ mod tests {
         let req = SearchRequest::vector(&query, 3);
         let results = store.search(&req).await.unwrap();
         assert!(!results.is_empty());
-        assert_eq!(results[0].source, SearchSource::LanceDb, "cold mode must use lancedb");
+        assert_eq!(
+            results[0].source,
+            SearchSource::LanceDb,
+            "cold mode must use lancedb"
+        );
     }
 
     #[tokio::test]

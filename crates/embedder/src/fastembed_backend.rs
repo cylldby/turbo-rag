@@ -29,10 +29,13 @@ impl FastEmbedBackend {
     }
 
     fn build(model_id: EmbeddingModel, dim: usize, name: &'static str) -> anyhow::Result<Self> {
-        let model = TextEmbedding::try_new(
-            InitOptions::new(model_id).with_show_download_progress(true),
-        )?;
-        Ok(Self { model: Mutex::new(model), dim, name })
+        let model =
+            TextEmbedding::try_new(InitOptions::new(model_id).with_show_download_progress(true))?;
+        Ok(Self {
+            model: Mutex::new(model),
+            dim,
+            name,
+        })
     }
 }
 
@@ -71,7 +74,10 @@ mod tests {
     async fn bge_small_embed_and_dim() {
         let backend = FastEmbedBackend::bge_small_en().unwrap();
         assert_eq!(backend.dim(), 384);
-        let vecs = backend.embed_batch(&["hello world".to_string()]).await.unwrap();
+        let vecs = backend
+            .embed_batch(&["hello world".to_string()])
+            .await
+            .unwrap();
         assert_eq!(vecs.len(), 1);
         assert_eq!(vecs[0].len(), 384);
     }
@@ -100,6 +106,9 @@ mod tests {
             .await
             .unwrap();
         let sim = cosine_similarity(&vecs[0], &vecs[1]);
-        assert!(sim < 0.9, "unrelated texts should have cosine < 0.9, got {sim}");
+        assert!(
+            sim < 0.9,
+            "unrelated texts should have cosine < 0.9, got {sim}"
+        );
     }
 }

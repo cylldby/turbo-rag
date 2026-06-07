@@ -41,8 +41,13 @@ impl CompressionInfo {
     }
 
     pub fn print_table() {
-        println!("\n─── Compression Ratio Table ──────────────────────────────────────────────────");
-        println!("{:<8} {:<6} {:<8} {:<16} {:<16}", "dim", "bits", "ratio", "original/1M", "compressed/1M");
+        println!(
+            "\n─── Compression Ratio Table ──────────────────────────────────────────────────"
+        );
+        println!(
+            "{:<8} {:<6} {:<8} {:<16} {:<16}",
+            "dim", "bits", "ratio", "original/1M", "compressed/1M"
+        );
         println!("{}", "─".repeat(78));
         for dim in [384, 768, 1024, 1536] {
             for bits in [2, 4] {
@@ -151,7 +156,7 @@ mod tests {
     /// Distinct unit vector per id — varying angle ensures vectors are well-separated.
     fn unit_vec_for_id(id: usize, dim: usize) -> Vec<f32> {
         use std::f32::consts::PI;
-        let offset = id as f32 * PI / 8.0;  // 22.5° spacing between ids
+        let offset = id as f32 * PI / 8.0; // 22.5° spacing between ids
         let v: Vec<f32> = (0..dim)
             .map(|i| (i as f32 * PI / dim as f32 + offset).sin())
             .collect();
@@ -184,7 +189,7 @@ mod tests {
 
     #[test]
     fn top_result_is_self() {
-        let dim = 128;  // higher dim → better quantization fidelity
+        let dim = 128; // higher dim → better quantization fidelity
         let mut idx = QuantizedIndex::new(dim, 4);
         let vecs: Vec<Vec<f32>> = (0..50).map(|i| unit_vec_for_id(i, dim)).collect();
         let ids: Vec<u64> = (0..50).collect();
@@ -202,7 +207,10 @@ mod tests {
         let v1 = unit_vec_for_id(3, dim);
         let v2: Vec<f32> = v1.iter().map(|x| x + 0.01).collect();
         let sim = cosine_similarity(&v1, &v2);
-        assert!(sim > 0.9, "similar vectors should have high cosine similarity: {sim}");
+        assert!(
+            sim > 0.9,
+            "similar vectors should have high cosine similarity: {sim}"
+        );
     }
 
     #[test]
@@ -214,6 +222,9 @@ mod tests {
         idx.add_batch(&ids, &vecs);
         idx.remove(0);
         let results = idx.search(&vecs[0], 10);
-        assert!(results.iter().all(|(id, _)| *id != 0), "deleted id should not appear");
+        assert!(
+            results.iter().all(|(id, _)| *id != 0),
+            "deleted id should not appear"
+        );
     }
 }

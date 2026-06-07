@@ -12,8 +12,7 @@ mod blob_integration {
     fn s3() -> Arc<S3Backend> {
         // Picks up AWS_ENDPOINT_URL, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY from env.
         // .env.test sets these to point at the local MinIO instance.
-        let bucket =
-            std::env::var("BLOB_BUCKET").unwrap_or_else(|_| "turbo-rag-dev".to_string());
+        let bucket = std::env::var("BLOB_BUCKET").unwrap_or_else(|_| "turbo-rag-dev".to_string());
         Arc::new(S3Backend::from_env(&bucket).expect("S3Backend init failed — is MinIO running?"))
     }
 
@@ -76,19 +75,31 @@ mod blob_integration {
     async fn blob_minio_exists_tracks_object_lifecycle() {
         let store = s3();
         let key = unique_key("exists");
-        assert!(!store.exists(&key).await.unwrap(), "should not exist before put");
+        assert!(
+            !store.exists(&key).await.unwrap(),
+            "should not exist before put"
+        );
         store.put(&key, Bytes::from_static(b"x")).await.unwrap();
         assert!(store.exists(&key).await.unwrap(), "should exist after put");
         store.delete(&key).await.unwrap();
-        assert!(!store.exists(&key).await.unwrap(), "should not exist after delete");
+        assert!(
+            !store.exists(&key).await.unwrap(),
+            "should not exist after delete"
+        );
     }
 
     #[tokio::test]
     async fn blob_minio_list_prefix() {
         let store = s3();
         let prefix = unique_key("list");
-        store.put(&format!("{prefix}/a"), Bytes::from_static(b"a")).await.unwrap();
-        store.put(&format!("{prefix}/b"), Bytes::from_static(b"b")).await.unwrap();
+        store
+            .put(&format!("{prefix}/a"), Bytes::from_static(b"a"))
+            .await
+            .unwrap();
+        store
+            .put(&format!("{prefix}/b"), Bytes::from_static(b"b"))
+            .await
+            .unwrap();
         store
             .put("integration-test/other/x", Bytes::from_static(b"x"))
             .await

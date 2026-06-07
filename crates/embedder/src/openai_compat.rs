@@ -66,10 +66,10 @@ impl OpenAICompatBackend {
 impl EmbeddingBackend for OpenAICompatBackend {
     async fn embed_batch(&self, texts: &[String]) -> Result<Vec<Vec<f32>>> {
         let url = format!("{}/embeddings", self.base_url);
-        let mut req = self
-            .client
-            .post(&url)
-            .json(&EmbedRequest { model: &self.model, input: texts });
+        let mut req = self.client.post(&url).json(&EmbedRequest {
+            model: &self.model,
+            input: texts,
+        });
         if let Some(key) = &self.api_key {
             req = req.bearer_auth(key);
         }

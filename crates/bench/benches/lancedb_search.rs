@@ -10,7 +10,11 @@ fn build_lance_store(n: usize, dim: usize) -> (Arc<LanceDbStore>, tempfile::Temp
     let rt = Runtime::new().unwrap();
     let dir = tempfile::tempdir().unwrap();
     let store = rt
-        .block_on(LanceDbStore::new(dir.path().to_str().unwrap(), "bench", dim))
+        .block_on(LanceDbStore::new(
+            dir.path().to_str().unwrap(),
+            "bench",
+            dim,
+        ))
         .unwrap();
     let store = Arc::new(store);
 
@@ -42,7 +46,10 @@ fn bench_lance_search(c: &mut Criterion) {
         group.bench_with_input(BenchmarkId::new("k5", &label), &(), |b, _| {
             b.to_async(&rt).iter(|| async {
                 let req = SearchRequest::vector(&query, 5);
-                (store.clone() as Arc<dyn VectorStore>).search(&req).await.unwrap()
+                (store.clone() as Arc<dyn VectorStore>)
+                    .search(&req)
+                    .await
+                    .unwrap()
             });
         });
     }

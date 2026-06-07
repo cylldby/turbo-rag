@@ -52,9 +52,7 @@ impl BlobBackend for S3Backend {
                 .bytes()
                 .await
                 .map_err(|e| TurboError::Blob(e.to_string())),
-            Err(object_store::Error::NotFound { .. }) => {
-                Err(TurboError::NotFound(key.to_string()))
-            }
+            Err(object_store::Error::NotFound { .. }) => Err(TurboError::NotFound(key.to_string())),
             Err(e) => Err(TurboError::Blob(e.to_string())),
         }
     }

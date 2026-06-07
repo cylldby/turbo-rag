@@ -5,20 +5,22 @@ use arrow_array::{
 #[cfg(feature = "store-lance")]
 use arrow_schema::{DataType, Field, Schema};
 #[cfg(feature = "store-lance")]
-use common::{EmbeddedDoc, Result, ScoredDoc, SearchRequest, SearchSource, SearchType,
-             TurboError, VectorStore};
-#[cfg(feature = "store-lance")]
 use async_trait::async_trait;
 #[cfg(feature = "store-lance")]
-use futures::TryStreamExt;
+use common::{
+    EmbeddedDoc, Result, ScoredDoc, SearchRequest, SearchSource, SearchType, TurboError,
+    VectorStore,
+};
 #[cfg(feature = "store-lance")]
-use lancedb::{connect, Connection};
+use futures::TryStreamExt;
 #[cfg(feature = "store-lance")]
 use lancedb::index::scalar::{FtsIndexBuilder, FullTextSearchQuery};
 #[cfg(feature = "store-lance")]
 use lancedb::index::Index;
 #[cfg(feature = "store-lance")]
 use lancedb::query::{ExecutableQuery, QueryBase, QueryExecutionOptions};
+#[cfg(feature = "store-lance")]
+use lancedb::{connect, Connection};
 #[cfg(feature = "store-lance")]
 use std::sync::Arc;
 
@@ -77,10 +79,7 @@ impl LanceDbStore {
             Err(_) => {
                 let schema = self.schema();
                 let empty = RecordBatch::new_empty(schema.clone());
-                let reader = Box::new(RecordBatchIterator::new(
-                    vec![Ok(empty)],
-                    schema,
-                ));
+                let reader = Box::new(RecordBatchIterator::new(vec![Ok(empty)], schema));
                 self.conn
                     .create_table(&self.table_name, reader)
                     .execute()
@@ -94,7 +93,10 @@ impl LanceDbStore {
         let schema = self.schema();
         let ids = UInt64Array::from_iter_values(docs.iter().map(|d| d.id));
         let texts = StringArray::from_iter_values(docs.iter().map(|d| d.text.as_str()));
-        let flat: Vec<f32> = docs.iter().flat_map(|d| d.embedding.iter().copied()).collect();
+        let flat: Vec<f32> = docs
+            .iter()
+            .flat_map(|d| d.embedding.iter().copied())
+            .collect();
         let values = Arc::new(Float32Array::from(flat));
         let embedding_col = FixedSizeListArray::try_new(
             Arc::new(Field::new("item", DataType::Float32, true)),
@@ -152,9 +154,9 @@ impl VectorStore for LanceDbStore {
             }
 
             SearchType::Bm25 => {
-                let query_text = request.query_text.ok_or_else(|| {
-                    TurboError::Store("BM25 search requires query_text".into())
-                })?;
+                let query_text = request
+                    .query_text
+                    .ok_or_else(|| TurboError::Store("BM25 search requires query_text".into()))?;
                 let stream = table
                     .query()
                     .full_text_search(FullTextSearchQuery::new(query_text.to_string()))
@@ -170,9 +172,9 @@ impl VectorStore for LanceDbStore {
             }
 
             SearchType::Hybrid { .. } => {
-                let query_text = request.query_text.ok_or_else(|| {
-                    TurboError::Store("Hybrid search requires query_text".into())
-                })?;
+                let query_text = request
+                    .query_text
+                    .ok_or_else(|| TurboError::Store("Hybrid search requires query_text".into()))?;
                 // execute_hybrid runs vector + BM25 in parallel and applies RRF internally.
                 let stream = table
                     .query()
@@ -284,7 +286,11 @@ mod tests {
         let req = SearchRequest::vector(&query, 5);
         let results = store.search(&req).await.unwrap();
         for r in &results {
-            assert!(r.text.starts_with("document about topic number"), "text should be preserved: {}", r.text);
+            assert!(
+                r.text.starts_with("document about topic number"),
+                "text should be preserved: {}",
+                r.text
+            );
         }
     }
 
@@ -294,18 +300,30 @@ mod tests {
         let (store, _dir) = lance_store(dim).await;
         // Insert docs with clearly distinct vocabulary
         let docs = vec![
-            EmbeddedDoc { id: 1, text: "turbovec compresses vectors with SIMD quantisation".into(),
-                embedding: vec![1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                metadata: Default::default() },
-            EmbeddedDoc { id: 2, text: "lancedb is an embedded vector database for retrieval".into(),
-                embedding: vec![0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                metadata: Default::default() },
-            EmbeddedDoc { id: 3, text: "rust is a systems programming language".into(),
-                embedding: vec![0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                metadata: Default::default() },
+            EmbeddedDoc {
+                id: 1,
+                text: "turbovec compresses vectors with SIMD quantisation".into(),
+                embedding: vec![
+                    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                ],
+                metadata: Default::default(),
+            },
+            EmbeddedDoc {
+                id: 2,
+                text: "lancedb is an embedded vector database for retrieval".into(),
+                embedding: vec![
+                    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                ],
+                metadata: Default::default(),
+            },
+            EmbeddedDoc {
+                id: 3,
+                text: "rust is a systems programming language".into(),
+                embedding: vec![
+                    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                ],
+                metadata: Default::default(),
+            },
         ];
         store.upsert(&docs).await.unwrap();
         store.ensure_fts_index().await.unwrap();
@@ -316,7 +334,10 @@ mod tests {
 
         assert!(!results.is_empty(), "BM25 should return results");
         // The first result must contain the queried keyword
-        assert_eq!(results[0].id, 1, "turbovec doc should rank first for 'turbovec SIMD'");
+        assert_eq!(
+            results[0].id, 1,
+            "turbovec doc should rank first for 'turbovec SIMD'"
+        );
     }
 
     #[tokio::test]
@@ -324,26 +345,39 @@ mod tests {
         let dim = 16;
         let (store, _dir) = lance_store(dim).await;
         let docs = vec![
-            EmbeddedDoc { id: 10, text: "neural network deep learning model training".into(),
-                embedding: vec![1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                metadata: Default::default() },
-            EmbeddedDoc { id: 11, text: "random forest ensemble classification algorithm".into(),
-                embedding: vec![0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                metadata: Default::default() },
-            EmbeddedDoc { id: 12, text: "transformer attention mechanism language model".into(),
-                embedding: vec![0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                metadata: Default::default() },
+            EmbeddedDoc {
+                id: 10,
+                text: "neural network deep learning model training".into(),
+                embedding: vec![
+                    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                ],
+                metadata: Default::default(),
+            },
+            EmbeddedDoc {
+                id: 11,
+                text: "random forest ensemble classification algorithm".into(),
+                embedding: vec![
+                    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                ],
+                metadata: Default::default(),
+            },
+            EmbeddedDoc {
+                id: 12,
+                text: "transformer attention mechanism language model".into(),
+                embedding: vec![
+                    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                ],
+                metadata: Default::default(),
+            },
         ];
         store.upsert(&docs).await.unwrap();
         store.ensure_fts_index().await.unwrap();
 
         // Vector points toward doc 10; keyword "transformer" is in doc 12
         // Hybrid should blend both signals
-        let query_vec = vec![1.0f32, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                             0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
+        let query_vec = vec![
+            1.0f32, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        ];
         let req = SearchRequest::hybrid(&query_vec, "transformer", 3, 60);
         let results = store.search(&req).await.unwrap();
 
@@ -351,16 +385,26 @@ mod tests {
         assert!(results.len() <= 3);
         // Both doc 10 (vector match) and doc 12 (keyword match) should appear
         let ids: Vec<u64> = results.iter().map(|r| r.id).collect();
-        assert!(ids.contains(&10) || ids.contains(&12),
-                "hybrid should surface at least one relevant doc, got: {ids:?}");
+        assert!(
+            ids.contains(&10) || ids.contains(&12),
+            "hybrid should surface at least one relevant doc, got: {ids:?}"
+        );
     }
 }
 
 #[cfg(feature = "store-lance")]
-enum ScoreColumn { Distance, Bm25, Rank }
+enum ScoreColumn {
+    Distance,
+    Bm25,
+    Rank,
+}
 
 #[cfg(feature = "store-lance")]
-fn collect_results(batches: &[RecordBatch], k: usize, score_col: ScoreColumn) -> Result<Vec<ScoredDoc>> {
+fn collect_results(
+    batches: &[RecordBatch],
+    k: usize,
+    score_col: ScoreColumn,
+) -> Result<Vec<ScoredDoc>> {
     use arrow_array::cast::AsArray;
     use arrow_array::types::Float32Type;
 
@@ -382,14 +426,16 @@ fn collect_results(batches: &[RecordBatch], k: usize, score_col: ScoreColumn) ->
             let score = match &score_col {
                 ScoreColumn::Distance => {
                     // _distance: lower = more similar; convert to [0,1] similarity
-                    batch.column_by_name("_distance")
+                    batch
+                        .column_by_name("_distance")
                         .and_then(|c| c.as_primitive_opt::<Float32Type>())
                         .map(|a| 1.0 / (1.0 + a.value(i)))
                         .unwrap_or(1.0 - (global_rank as f32 * 0.05).min(0.99))
                 }
                 ScoreColumn::Bm25 => {
                     // _score: BM25 relevance, higher = more relevant, already in natural order
-                    batch.column_by_name("_score")
+                    batch
+                        .column_by_name("_score")
                         .and_then(|c| c.as_primitive_opt::<Float32Type>())
                         .map(|a| a.value(i))
                         .unwrap_or(1.0 - (global_rank as f32 * 0.05).min(0.99))
@@ -423,7 +469,11 @@ fn collect_results(batches: &[RecordBatch], k: usize, score_col: ScoreColumn) ->
             deduped.push(doc);
         }
     }
-    deduped.sort_by(|a, b| b.score.partial_cmp(&a.score).unwrap_or(std::cmp::Ordering::Equal));
+    deduped.sort_by(|a, b| {
+        b.score
+            .partial_cmp(&a.score)
+            .unwrap_or(std::cmp::Ordering::Equal)
+    });
     deduped.truncate(k);
     Ok(deduped)
 }
