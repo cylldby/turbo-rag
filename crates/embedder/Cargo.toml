@@ -1,0 +1,31 @@
+[package]
+name    = "embedder"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+common      = { path = "../common" }
+async-trait = { workspace = true }
+anyhow      = { workspace = true }
+tokio       = { workspace = true }
+serde       = { workspace = true }
+serde_json  = { workspace = true }
+bytes       = { workspace = true }
+
+# backend-fastembed
+fastembed = { version = "5", optional = true }
+
+# backend-openai-compat (Ollama, OpenAI, Voyage AI, Azure)
+reqwest = { version = "0.12", features = ["json"], optional = true }
+
+# rand is always needed for random_unit_vec (used by bench CLI even without backend-synthetic)
+rand = { workspace = true }
+
+[features]
+default             = ["backend-fastembed"]
+backend-fastembed   = ["dep:fastembed"]
+backend-openai-compat = ["dep:reqwest"]
+backend-synthetic   = []
+all-backends        = ["backend-fastembed", "backend-openai-compat", "backend-synthetic"]
+# Enables integration tests that require live network services (WireMock, Ollama).
+integration         = ["backend-openai-compat"]
