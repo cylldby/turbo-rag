@@ -18,7 +18,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - name: Install protoc
-        run: sudo apt-get update -q && sudo apt-get install -y protobuf-compiler
+        run: sudo apt-get update -q && sudo apt-get install -y protobuf-compiler libopenblas-dev
       - run: cargo check --workspace
 
   test:
@@ -34,7 +34,7 @@ jobs:
       - uses: Swatinem/rust-cache@v2
       - name: Install protoc (Ubuntu)
         if: matrix.os == 'ubuntu-latest'
-        run: sudo apt-get update -q && sudo apt-get install -y protobuf-compiler
+        run: sudo apt-get update -q && sudo apt-get install -y protobuf-compiler libopenblas-dev
       - name: Install protoc (macOS)
         if: matrix.os == 'macos-latest'
         run: brew install protobuf
@@ -63,7 +63,7 @@ jobs:
           components: clippy
       - uses: Swatinem/rust-cache@v2
       - name: Install protoc
-        run: sudo apt-get update -q && sudo apt-get install -y protobuf-compiler
+        run: sudo apt-get update -q && sudo apt-get install -y protobuf-compiler libopenblas-dev
       - run: cargo clippy --workspace -- -D warnings
 
   conventional-commits:

@@ -7,7 +7,6 @@ extern crate blas_src;
 use anyhow::Result;
 use bytes::Bytes;
 use serde::{Deserialize, Serialize};
-use std::path::PathBuf;
 // IdMapIndex wraps TurboQuantIndex with external ID tracking + O(1) deletes.
 // It is sufficient for all use cases in this project.
 use turbovec::IdMapIndex;
@@ -132,13 +131,13 @@ impl QuantizedIndex {
     }
 
     /// Write to a named file path (for local cache).
-    pub fn save_to(&self, path: &PathBuf) -> Result<()> {
+    pub fn save_to(&self, path: &std::path::Path) -> Result<()> {
         self.id_map.write(path.to_str().unwrap())?;
         Ok(())
     }
 
     /// Load from a named file path.
-    pub fn load_from(path: &PathBuf, dim: usize, bits: usize) -> Result<Self> {
+    pub fn load_from(path: &std::path::Path, dim: usize, bits: usize) -> Result<Self> {
         let id_map = IdMapIndex::load(path.to_str().unwrap())?;
         Ok(Self { id_map, dim, bits })
     }

@@ -79,9 +79,7 @@ fn bench_compression_ratio(c: &mut Criterion) {
 
             println!(
                 "dim={dim:>4}  bits={bits}  ratio={:.1}x  {:.0}B/vec → {:.0}B/vec",
-                info.ratio,
-                info.original_bytes_per_vec,
-                info.compressed_bytes_per_vec
+                info.ratio, info.original_bytes_per_vec, info.compressed_bytes_per_vec
             );
         }
     }
