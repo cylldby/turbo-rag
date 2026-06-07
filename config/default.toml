@@ -1,0 +1,22 @@
+[embedding]
+backend   = "openai-compat"
+base_url  = "http://localhost:11434/v1"
+api_key   = ""
+model     = "nomic-embed-text"
+dim       = 768
+
+[blob]
+backend    = "local"
+local_path = "./data/blob"
+bucket     = "turbo-rag-dev"
+
+[lance]
+uri = "./data/lance"
+
+[pipeline]
+batch_size      = 64
+turbovec_bits   = 4
+load_strategy   = "from-blob"
+
+[search]
+mode = "auto"

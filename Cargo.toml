@@ -1,0 +1,37 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/common",
+    "crates/embedder",
+    "crates/compressor",
+    "crates/blob",
+    "crates/store",
+    "crates/pipeline",
+    "crates/bench",
+    "crates/cli",
+]
+
+[workspace.dependencies]
+# async
+tokio         = { version = "1",    features = ["full"] }
+async-trait   = "0.1"
+# errors
+anyhow        = "1"
+thiserror     = "2"
+# serde
+serde         = { version = "1",    features = ["derive"] }
+serde_json    = "1"
+# data
+bytes         = "1"
+# logging
+tracing       = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
+# parallel
+rayon         = "1"
+# progress
+indicatif     = "0.17"
+# rand (for SyntheticEmbedder)
+rand          = { version = "0.8", features = ["small_rng"] }
+# arrow (must match lancedb's version — currently 57.x)
+arrow-array   = "57"
+arrow-schema  = "57"
