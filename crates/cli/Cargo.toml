@@ -1,0 +1,34 @@
+[package]
+name    = "cli"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "turbo-rag"
+path = "src/main.rs"
+
+[dependencies]
+common     = { path = "../common" }
+embedder   = { path = "../embedder", features = ["all-backends"] }
+compressor = { path = "../compressor" }
+blob       = { path = "../blob",     features = ["blob-s3"] }
+store      = { path = "../store",    features = ["store-lance"] }
+pipeline   = { path = "../pipeline" }
+
+anyhow             = { workspace = true }
+tokio              = { workspace = true }
+serde              = { workspace = true }
+serde_json         = { workspace = true }
+tracing            = { workspace = true }
+tracing-subscriber = { workspace = true }
+bytes              = { workspace = true }
+
+clap     = { version = "4",    features = ["derive", "env"] }
+config   = "0.14"
+dotenvy  = "0.15"
+reqwest  = { version = "0.12", features = ["json"] }
+tempfile = "3"
+ratatui  = "0.29"
+crossterm = "0.28"
+metrics  = "0.24"
+metrics-exporter-prometheus = "0.16"
