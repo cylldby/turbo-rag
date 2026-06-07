@@ -1,6 +1,6 @@
 # turbo-rag
 
-[![CI](https://github.com/YOUR_USERNAME/turbo-rag/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/turbo-rag/actions/workflows/ci.yml)
+[![CI](https://github.com/cylldby/turbo-rag/actions/workflows/ci.yml/badge.svg)](https://github.com/cylldby/turbo-rag/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 A Rust project that wires **TurboQuant SIMD vector compression** (turbovec) and **LanceDB embedded vector retrieval** into a full RAG pipeline. Every dependency — embedding model, blob store, vector index — sits behind a trait; backends swap without recompilation.
@@ -12,7 +12,7 @@ A Rust project that wires **TurboQuant SIMD vector compression** (turbovec) and 
 brew install protobuf && cargo install just
 ollama pull nomic-embed-text
 
-git clone https://github.com/YOUR_USERNAME/turbo-rag && cd turbo-rag
+git clone https://github.com/cylldby/turbo-rag && cd turbo-rag
 cargo build --release -p cli
 
 just ingest-sample                             # embed + index 50 fixture docs
@@ -266,7 +266,7 @@ ollama pull nomic-embed-text
 ### No Docker (local files only)
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/turbo-rag && cd turbo-rag
+git clone https://github.com/cylldby/turbo-rag && cd turbo-rag
 just doctor                    # verify backends
 just ingest-sample             # ingest the 50-doc fixture corpus
 just query "What is RAG?"
